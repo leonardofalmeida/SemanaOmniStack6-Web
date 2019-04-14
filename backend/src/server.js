@@ -6,12 +6,29 @@ const path = require("path");
 
 const app = express();
 
+//Para aceitar tanto protocolo http quanto WS
+const server = require("http").Serve(app);
+const io = require("socket.io")(server);
+
+//Seta uma "sala" especifica para cada usuário
+io.on("connection", socket => {
+  socket.on("connectRoom", box => {
+    socket.join(box);
+  });
+});
+
 mongoose.connect(
   "mongodb+srv://omnistack:stackomni@cluster0-iw1km.mongodb.net/omnistack?retryWrites=true",
   {
     useNewUrlParser: true
   }
 );
+
+//Middleware io
+app.use((req, res, next) => {
+  req.io = io;
+  return next(); // vai para o restante das rotas abaixo
+});
 
 //Entende os formatos json
 app.use(express.json());
@@ -25,4 +42,4 @@ app.use("/files", express.static(path.resolve(__dirname, "..", "tmp")));
 //Importando as rotas
 app.use(require("./routes"));
 
-app.listen(3333);
+server.listen(3333);
