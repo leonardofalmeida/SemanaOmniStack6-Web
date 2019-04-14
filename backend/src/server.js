@@ -3,11 +3,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const cors = require("cors");
 
 const app = express();
 
+//Definindo o cors
+app.use(cors());
+
 //Para aceitar tanto protocolo http quanto WS
-const server = require("http").Serve(app);
+const server = require("http").Server(app);
 const io = require("socket.io")(server);
 
 //Seta uma "sala" especifica para cada usuário
